@@ -1,0 +1,43 @@
+# Template domain pack. Copy this directory to domains/<name>/ and fill it in.
+#
+# Every section below is optional. With nothing but name + version the engine
+# runs in baseline mode: stock embedder, dense + sparse retrieval, no concepts.
+# Add sections as you author them; the eval harness measures what each one buys.
+
+name: template
+version: 0.1.0
+
+# lexicon:
+#   source: lexicon.ttl              # SKOS turtle, path relative to this file
+#   scheme_uri: "http://example.org/scheme"
+#   match:
+#     case_sensitive: false
+#     min_label_length: 3
+#     stopword_labels: []            # labels too generic to match on
+
+# sectioning:
+#   heading_regexes: ['^\d+(\.\d+)*\s+\S']
+#   docx_styles: ['Heading 1', 'Heading 2']
+#   pdf_heuristic: font_size_delta   # or: none
+#   boundary_level: 1                # headings this deep or shallower end a chunk
+
+# embedder:                          # omit to use the engine's stock embedder
+#   id: BAAI/bge-m3
+#   dim: 1024
+
+weights:                             # set by the eval sweep, not by hand
+  alpha_dense: 0.6
+  beta_sparse: 0.4
+  gamma_concept: 0.0                 # no lexicon in the template
+  expansion:
+    alt_label: 1.0
+    related: 0.4
+    broader: 0.15
+    narrower: 0.15
+
+# clusters:
+#   model: kmeans.joblib
+#   enabled: false
+
+# eval:
+#   gold: gold_queries.jsonl
