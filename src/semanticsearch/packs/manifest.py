@@ -37,9 +37,14 @@ class LexiconConfig(_Strict):
 
 class SectioningConfig(_Strict):
     heading_regexes: tuple[str, ...] = ()
+    # Empty -> Word's built-in "Title" and "Heading N" styles. Otherwise exactly these
+    # styles are headings, at the level in the style name or else their list position.
     docx_styles: tuple[str, ...] = ()
     pdf_heuristic: Literal["font_size_delta", "none"] = "font_size_delta"
     boundary_level: PositiveInt = 1  # headings at or above this depth are hard chunk boundaries
+    # A regex match longer than this, or ending in sentence punctuation, is a numbered
+    # clause rather than a heading.
+    max_heading_chars: PositiveInt = 120
 
     @field_validator("heading_regexes")
     @classmethod

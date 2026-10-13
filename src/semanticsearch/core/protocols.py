@@ -4,7 +4,7 @@ inherit from anything; they are registered by name and resolved from config."""
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Literal, Protocol, Sequence, runtime_checkable
+from typing import Iterator, Literal, Protocol, Sequence, runtime_checkable
 
 from semanticsearch.core.types import (
     Answer,
@@ -15,6 +15,8 @@ from semanticsearch.core.types import (
     Element,
     ExpansionPolicy,
     Filter,
+    IngestStatus,
+    ManifestRecord,
     Point,
     Prompt,
     SearchRequest,
@@ -38,6 +40,17 @@ class Parser(Protocol):
     def supports(self, path: Path) -> bool: ...
 
     def parse(self, path: Path) -> Sequence[Element]: ...
+
+
+@runtime_checkable
+class ManifestStore(Protocol):
+    """One row per document. SQLite today; Postgres for multi-node without touching ingest."""
+
+    def get(self, document_id: str) -> ManifestRecord | None: ...
+
+    def put(self, record: ManifestRecord) -> None: ...
+
+    def records(self, status: IngestStatus | None = None) -> Iterator[ManifestRecord]: ...
 
 
 @runtime_checkable

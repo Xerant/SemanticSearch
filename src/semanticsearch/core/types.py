@@ -82,6 +82,37 @@ class Document:
         return self.meta.document_id
 
 
+# -------------------------------------------------------------------- manifest
+
+
+class IngestStatus(str, Enum):
+    OK = "ok"
+    EMPTY = "empty"  # parsed, but no text: usually a scanned PDF awaiting OCR
+    FAILED = "failed"
+    DUPLICATE = "duplicate"  # same bytes as `duplicate_of`; not indexed separately
+    REMOVED = "removed"  # gone from the corpus; its points must be deleted
+
+
+@dataclass(frozen=True, slots=True)
+class ManifestRecord:
+    """One row per document in the manifest store: the document's metadata plus what
+    ingest last did with it. `size_bytes` and `meta.modified_ts` let an unchanged file
+    skip re-hashing; the version fields force a re-parse when the pipeline or pack moves."""
+
+    meta: DocumentMeta
+    size_bytes: int
+    status: IngestStatus
+    ingested_at: datetime
+    pipeline_version: str = PIPELINE_VERSION
+    n_elements: int = 0
+    error: str | None = None
+    duplicate_of: str | None = None
+
+    @property
+    def document_id(self) -> str:
+        return self.meta.document_id
+
+
 # -------------------------------------------------------------------- chunking
 
 

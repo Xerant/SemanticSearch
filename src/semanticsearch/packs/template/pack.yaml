@@ -20,6 +20,7 @@ version: 0.1.0
 #   docx_styles: ['Heading 1', 'Heading 2']
 #   pdf_heuristic: font_size_delta   # or: none
 #   boundary_level: 1                # headings this deep or shallower end a chunk
+#   max_heading_chars: 120           # longer regex matches are clauses, not headings
 
 # embedder:                          # omit to use the engine's stock embedder
 #   id: BAAI/bge-m3
