@@ -57,10 +57,34 @@ class SectioningConfig(_Strict):
         return patterns
 
 
+class ChunkingConfig(_Strict):
+    """Sizes are in the embedder's tokens. Overlap is whole sentences carried over from
+    the previous chunk in the same section, up to `overlap_tokens`."""
+
+    max_tokens: PositiveInt = 512
+    overlap_tokens: int = Field(80, ge=0)
+    abbreviations: tuple[str, ...] = ()  # extra "Abbr." forms that never end a sentence
+
+    @model_validator(mode="after")
+    def _overlap_fits(self) -> ChunkingConfig:
+        if self.overlap_tokens * 2 > self.max_tokens:
+            raise ValueError("chunking.overlap_tokens must be at most half of max_tokens")
+        return self
+
+
 class EmbedderConfig(_Strict):
     id: str
     dim: PositiveInt
     tokenizer: str | None = None  # defaults to the embedder's own tokenizer
+
+    @property
+    def tokenizer_id(self) -> str:
+        return self.tokenizer or self.id
+
+
+# Used when a pack names no embedder. Multilingual, 1024-d, 8192-token context, and
+# fits an 11 GB GPU in fp16.
+STOCK_EMBEDDER = EmbedderConfig(id="BAAI/bge-m3", dim=1024)
 
 
 class ExpansionWeights(_Strict):
@@ -108,7 +132,8 @@ class PackManifest(_Strict):
     version: str = Field(pattern=_SEMVER)
     lexicon: LexiconConfig | None = None
     sectioning: SectioningConfig = SectioningConfig()
-    embedder: EmbedderConfig | None = None  # None -> engine's stock embedder
+    chunking: ChunkingConfig = ChunkingConfig()
+    embedder: EmbedderConfig | None = None  # None -> STOCK_EMBEDDER
     weights: Weights = Weights()
     clusters: ClustersConfig = ClustersConfig()
     eval: EvalConfig = EvalConfig()

@@ -9,7 +9,7 @@ import yaml
 from pydantic import ValidationError
 
 from semanticsearch.core.errors import PackError
-from semanticsearch.packs.manifest import PackManifest
+from semanticsearch.packs.manifest import STOCK_EMBEDDER, EmbedderConfig, PackManifest
 
 MANIFEST_NAME = "pack.yaml"
 TEMPLATE_PACK_DIR = Path(__file__).parent / "template"
@@ -24,6 +24,10 @@ class DomainPack:
     def version_stamp(self) -> str:
         """Written to every point as `pack_version`."""
         return f"{self.manifest.name}@{self.manifest.version}"
+
+    @property
+    def embedder(self) -> EmbedderConfig:
+        return self.manifest.embedder or STOCK_EMBEDDER
 
     def resolve(self, rel: Path) -> Path:
         return rel if rel.is_absolute() else self.root / rel

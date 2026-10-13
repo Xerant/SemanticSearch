@@ -48,6 +48,8 @@ def ingestor_for_pack(
 
 
 __all__ = [
+    "DOCUMENTS_DIR",
+    "MANIFEST_FILE",
     "AclResolver",
     "DocumentStore",
     "IngestReport",

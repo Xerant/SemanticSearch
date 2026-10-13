@@ -22,9 +22,15 @@ version: 0.1.0
 #   boundary_level: 1                # headings this deep or shallower end a chunk
 #   max_heading_chars: 120           # longer regex matches are clauses, not headings
 
-# embedder:                          # omit to use the engine's stock embedder
+# chunking:                          # sizes in the embedder's tokens
+#   max_tokens: 512
+#   overlap_tokens: 80               # whole sentences, at most half of max_tokens
+#   abbreviations: [cl., Sch.]       # extra forms that never end a sentence
+
+# embedder:                          # omit to use the stock embedder, BAAI/bge-m3
 #   id: BAAI/bge-m3
 #   dim: 1024
+#   tokenizer: /models/bge-m3        # optional: tokenizer.json path, model dir, or HF id
 
 weights:                             # set by the eval sweep, not by hand
   alpha_dense: 0.6
